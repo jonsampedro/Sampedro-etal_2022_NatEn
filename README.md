@@ -18,7 +18,8 @@ However, we show that current within-region inequalities in energy access can pe
 Available at Zenodo: Add Zenodo Repo release (Link + citation)
 
 ## Data reference
-Available at Zenodo: Add Zenodo Input data (Link + citation)
+Available at Zenodo: https://zenodo.org/record/6780424#.YrznmXbMKUk
+Jon Sampedro, Stephanie Waldhoff, Jae Edmonds, Gokul Iyer, Siwa Msangi, Kanishka Narayan, Pralit Patel, & Marshall Wise. (2022). Input data for Sampedro et al [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6780424
 
 ## Contributing modeling software
 | Model | Version | Repository Link 
@@ -37,8 +38,8 @@ To reproduce the results and figures shown in Sampedro et al.,
 
 1. Install `R` here - https://www.r-project.org/
 2. Install `R studio` from here - https://www.rstudio.com/
-3. Download input data from ADD Zenodo and place in the corresponding subfolders in folder `workflow` (keep the same structure)
-4. Run the script called `Results_processing`chunk by chunk to generate the figures.  
+3. Download input data from Zenodo (https://zenodo.org/record/6780424#.YrznmXbMKUk) and place it in the corresponding subfolders in folder `workflow` (keep the same structure)
+4. Run the script called `Results_processing` chunk by chunk to generate the figures.  
 
 Note that figures are generated for a suite of representative regions. The user could easily genearte figures for any of the 32 GCAM regions (Figure 2, https://github.com/JGCRI/gcam-doc/blob/gh-pages/overview.md)
-Similarly the user can easily change some additional settings (e.g., gases or palettes) in the first lines of the scripts (Lines 30-40)
+Similarly the user can easily change some additional settings (e.g., gases or palettes) in the first lines of the script (Lines 30-40)
