@@ -15,7 +15,8 @@ The evolution of residential energy demand will have several multisector and mul
 However, we show that current within-region inequalities in energy access can persist over time if no additional mechanisms are implemented. In terms of emissions, lower deciles will be more impacted by household air pollution, while their contribution to direct GHG emissions is smaller. We also find that the share of income dedicated to energy is higher for lower deciles, with some regional differences.  
 
 ## Code reference
-Available at Zenodo: Add Zenodo Repo release (Link + citation)
+Available at Zenodo: https://zenodo.org/record/6780818#.YrzrFXbMKUk
+jonsampedro. (2022). jonsampedro/Sampedro-etal_2022_NatEn: Sampedro-etal_2022_NatEn-v1.0.0 (v-1.0.0). Zenodo. https://doi.org/10.5281/zenodo.6780818
 
 ## Data reference
 Available at Zenodo: https://zenodo.org/record/6780424#.YrznmXbMKUk
