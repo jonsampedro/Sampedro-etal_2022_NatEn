@@ -7,7 +7,9 @@
 Jon Sampedro<sup>1</sup>, Stephanie Waldhoff<sup>2\*</sup>, Jae Edmonds<sup>2</sup>, Gokul Iyer<sup>2</sup>, Siwa Msangi<sup>3</sup>, Kanishka Narayan<sup>2</sup>, Pralit Patel<sup>2</sup>, and Marshall Wise<sup>2</sup>, 
 
 <sup>1 </sup> Basque Center for Climate Change, Leioa, Spain
+
 <sup>2 </sup> Joint Global Change Research Institute, Pacific Northwest National Laboratory, College Park, United States of America
+
 <sup>3 </sup> U.S. Department of Agriculture, Economic Research Service, Washington D.C., United States of America
 
 \* corresponding author:  Stephanie.Waldhoff@pnnl.gov
