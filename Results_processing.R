@@ -1,6 +1,6 @@
 # Load libraries
 # --------
-.libPaths("C:/Users/samp699/Documents/R/lib-rfasst")
+#.libPaths("C:/Users/samp699/Documents/R/lib-rfasst")
 
 library(rgcam)
 library(dplyr)
@@ -133,6 +133,7 @@ flsp_plot_agg<-getQuery(prj,"building floorspace") %>%
 # Service output
 
 serv<-getQuery(prj,"building service output by tech (new)" ) %>%
+  mutate(sector = gsub("others","non-thermal",sector)) %>%
   filter(grepl("resid",sector)) %>%
   separate(sector,c("sector","decile"),sep = "_") %>%
   mutate(decile = gsub("d","D",decile)) %>%
@@ -264,6 +265,51 @@ modern.palma.serv.plot.sens<-modern.palma.serv.plot %>%
   distinct(scenario, subRegion, class, value) %>%
   separate(scenario, c("scenario","narrative"), sep = "_") %>%
   mutate(narrative = if_else(scenario == "2015", scenario, narrative))
+
+
+modern.gini.serv.datapre<- getQuery(prj,"building service output by tech (new)") %>%
+  mutate(sector = gsub("others","non-thermal",sector)) %>%
+  filter(grepl("resid",sector)) %>%
+  separate(sector,c("sector","decile"),sep = "_") %>%
+  mutate(decile = gsub("d","D",decile)) %>%
+  select(-output) %>%
+  filter(year >= 2015, year <= 2050) %>%
+  mutate(scenario = gsub("_2p6","-2p6",scenario)) %>%
+  separate(scenario,c("model","narrative"),sep = "_") %>%
+  mutate(scenario = if_else(grepl("2p6",narrative),"RCP2p6","Baseline")) %>%
+  mutate(narrative = gsub("-2p6","",narrative)) %>%
+  mutate(sector = gsub("resid ","",sector)) %>%
+  separate(sector, c("sector","type"), sep = " ") %>%
+  select(scenario,narrative,region,sector,type,subsector,technology,decile,year,value,Units) %>%
+  filter(grepl("modern",type)) %>%
+  group_by(scenario,narrative,region,sector,decile,year,Units) %>%
+  summarise(value = sum(value)) %>%
+  ungroup() %>%
+  group_by(scenario,narrative,region,sector,year,Units) %>%
+  mutate(value_reg = sum(value)) %>%
+  ungroup() %>%
+  mutate(share = value / value_reg) %>%
+  group_by(scenario,narrative,region,sector,year,Units) %>%
+  mutate(share_check = sum(share)) %>%
+  ungroup() %>%
+  select(scenario, narrative, region, sector, category = decile, year, share)
+
+modern.gini.serv<-pridr::compute_gini_deciles(modern.gini.serv.datapre %>% mutate(category = gsub("D", "d", category)) %>% mutate(Category = category),
+                                              inc_col = "share" , 
+                                              grouping_variables = c("scenario", "narrative", "region", "sector", "year")) %>%
+  rename(gini = output_name) %>%
+  select(scenario, narrative, region, sector, year, gini) %>%
+  distinct()
+
+
+# Write a clean summary with inequality metrics (Palma ratios and Ginis)
+energy.ineq.summary<-modern.palma.serv %>%
+  rename(Palma_ratio = value,
+         sector = class,
+         region = subRegion) %>%
+  left_join(modern.gini.serv, by = c("scenario", "narrative", "region", "sector", "year")) %>%
+  left_join_error_no_match(modern.gini.serv, by = c("scenario", "narrative", "region", "sector", "year")) %>%
+  write.csv("energy_ineq_summary.csv", row.names = F)
   
 
 #----------------------------------------
