@@ -218,6 +218,7 @@ serv.reg.fuel.agg<-serv %>%
 
 
 modern.palma.serv<- getQuery(prj,"building service output by tech (new)") %>%
+  mutate(sector = gsub("others","non-thermal",sector)) %>%
   filter(grepl("resid",sector)) %>%
   separate(sector,c("sector","decile"),sep = "_") %>%
   mutate(decile = gsub("d","D",decile)) %>%
@@ -307,7 +308,6 @@ energy.ineq.summary<-modern.palma.serv %>%
   rename(Palma_ratio = value,
          sector = class,
          region = subRegion) %>%
-  left_join(modern.gini.serv, by = c("scenario", "narrative", "region", "sector", "year")) %>%
   left_join_error_no_match(modern.gini.serv, by = c("scenario", "narrative", "region", "sector", "year")) %>%
   write.csv("energy_ineq_summary.csv", row.names = F)
   
