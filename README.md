@@ -4,15 +4,18 @@
 
 **Residential energy demand, emissions, and expenditures at region and income-decile level for alternative SSP scenarios**
 
-Jon Sampedro<sup>1\*</sup>, Stephanie Waldhoff<sup>1</sup>, Jae Edmonds<sup>1</sup>, Gokul Iyer<sup>1</sup>, Siwa Msangi<sup>1</sup>, Kanishka Narayan<sup>1</sup>, Pralit Patel<sup>1</sup>, and Marshall Wise<sup>1</sup>, 
+Jon Sampedro<sup>1</sup>, Stephanie Waldhoff<sup>2\*</sup>, Jae Edmonds<sup>2</sup>, Gokul Iyer<sup>2</sup>, Siwa Msangi<sup>3</sup>, Kanishka Narayan<sup>2</sup>, Pralit Patel<sup>2</sup>, and Marshall Wise<sup>2</sup>, 
 
-<sup>1 </sup> Joint Global Change Research Institute, Pacific Northwest National Laboratory, College Park, United States of America
+<sup>1 </sup> Basque Center for Climate Change, Leioa, Spain
 
-\* corresponding author:  jon.sampedro@pnnl.gov
+<sup>2 </sup> Joint Global Change Research Institute, Pacific Northwest National Laboratory, College Park, United States of America
+
+<sup>3 </sup> U.S. Department of Agriculture, Economic Research Service, Washington D.C., United States of America
+
+\* corresponding author:  Stephanie.Waldhoff@pnnl.gov
 
 ## Abstract
-The evolution of residential energy demand will have several multisector and multiscale implications in terms of energy access, emissions, and expenditures. Using an enhanced version of the Global Change Analysis Model (GCAM), we find that, residential energy service demand increases over time as per capita income and floorspace rises, with large differences across scenarios, regions and income groups. In all regions, differences between lower and upper deciles decrease over time, particularly for thermal services, as richer consumers get closer to their energy comfort levels. 
-However, we show that current within-region inequalities in energy access can persist over time if no additional mechanisms are implemented. In terms of emissions, lower deciles will be more impacted by household air pollution, while their contribution to direct GHG emissions is smaller. We also find that the share of income dedicated to energy is higher for lower deciles, with some regional differences.  
+The evolution of residential energy demand will have direct implications for human well-being and the climate system. Using a version of the Global Change Analysis Model (GCAM) that represents demand by income deciles for residential floorspace and energy within each region, we find that future residential energy service demand largely differs across scenarios, regions, and income groups. Overall, differences between lower and upper deciles decrease over time, particularly for thermal services, as richer consumers approach a satiation level in floorspace and energy services. However, in some regions, existing within-region inequalities in energy consumption persist over time due to slow income growth in lower income groups. Due to continued differences in fuel types, lower income deciles will have higher exposure to household air pollution, despite lower contributions to direct GHG emissions. We also find that the share of income dedicated to energy is higher for lower deciles, with strong regional    
 
 ## Code reference
 Available at Zenodo: https://zenodo.org/record/6780818#.YrzrFXbMKUk
