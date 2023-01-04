@@ -300,7 +300,27 @@ modern.gini.serv<-pridr::compute_gini_deciles(modern.gini.serv.datapre %>% mutat
                                               grouping_variables = c("scenario", "narrative", "region", "sector", "year")) %>%
   rename(gini = output_name) %>%
   select(scenario, narrative, region, sector, year, gini) %>%
-  distinct()
+  distinct() %>%
+  select(scenario, narrative, subRegion = region, class = sector, year, value = gini)
+
+modern.gini.serv.plot.pre<-modern.gini.serv %>%
+  mutate(scenario = paste0(scenario,"--2050")) %>%
+  mutate(scenario = if_else(year == 2015, "2015",scenario))
+
+modern.gini.serv.plot<-modern.gini.serv.plot.pre %>%
+  filter(scenario != 2015) %>%
+  filter(year == 2050) %>%
+  bind_rows(modern.gini.serv.plot.pre %>% filter(scenario == 2015)) %>%
+  select(-year) %>%
+  mutate(scenario = as.character(scenario))
+
+modern.gini.serv.plot.sens<-modern.gini.serv.plot %>%
+  mutate(scenario = gsub("--2050","",scenario),
+         scenario = paste0(scenario, "_" ,narrative),
+         scenario = if_else(grepl("2015",scenario),"2015",scenario)) %>%
+  distinct(scenario, subRegion, class, value) %>%
+  separate(scenario, c("scenario","narrative"), sep = "_") %>%
+  mutate(narrative = if_else(scenario == "2015", scenario, narrative))
 
 
 # Write a clean summary with inequality metrics (Palma ratios and Ginis)
@@ -990,6 +1010,76 @@ map_rcp_fin<-map_rcp$map_param_KMEANS +
                  plot.title = element_text(hjust = 0.5))
 
 ggplot2::ggsave("./figures/SM/Palma_map_2050_rcp.tiff",map_rcp_fin,"tiff",dpi=200)
+
+#-------------------------------------------
+# Gini in 2050 by scenario, region and service (narrative = SSP2)
+m1<-rmap::map(data = modern.gini.serv.plot %>% 
+                rename(sector = class,
+                       policy = scenario) %>%
+                filter(narrative == "SSP2") %>%
+                mutate(subRegion = if_else(subRegion == "EU-12","EU_12",subRegion),
+                       subRegion = if_else(subRegion == "EU-15","EU_15",subRegion)),
+              row = "sector",
+              col = "policy",
+              folder ="./figures",
+              legendType = "pretty",
+              background  = T,
+              theme_classic(),
+              title = "") 
+
+map.fin<-m1$map_param_PRETTY + 
+  ggplot2::theme(strip.text.y = element_text(size = 9),
+                 strip.text.x = element_text(size = 10),
+                 legend.text = element_text(size=8))
+
+ggplot2::ggsave("./figures/Gini_map_2050_ssp2.tiff",map.fin,"tiff",dpi=200)
+#-------------------------------------------
+# Gini for alternative narratives --  Baseline
+map_base<-rmap::map(data = modern.gini.serv.plot.sens %>% 
+                      rename(sector = class) %>%
+                      filter(scenario %in% c("2015","Baseline") ) %>%
+                      mutate(subRegion = if_else(subRegion == "EU-12","EU_12",subRegion),
+                             subRegion = if_else(subRegion == "EU-15","EU_15",subRegion)) %>%
+                      select(-scenario),
+                    row = "sector",
+                    col = "narrative",
+                    folder ="./figures",
+                    legendType = "pretty",
+                    background  = T,
+                    theme_classic(),
+                    title = "Baseline") 
+
+map_base_fin<-map_base$map_param_PRETTY + 
+  ggplot2::theme(strip.text.y = element_text(size = 6),
+                 strip.text.x = element_text(size = 8),
+                 legend.text = element_text(size = 7),
+                 plot.title = element_text(hjust = 0.5))
+
+ggplot2::ggsave("./figures/SM/Gini_2050_base.tiff",map_base_fin,"tiff", width = 10, height = 5)
+
+#-------------------------------------------
+# Gini for alternative narratives --  RCP2.6
+map_rcp<-rmap::map(data = modern.gini.serv.plot.sens %>% 
+                     rename(sector = class) %>%
+                     filter(scenario %in% c("2015","RCP2p6") ) %>%
+                     mutate(subRegion = if_else(subRegion == "EU-12","EU_12",subRegion),
+                            subRegion = if_else(subRegion == "EU-15","EU_15",subRegion)) %>%
+                     select(-scenario),
+                   row = "sector",
+                   col = "narrative",
+                   folder ="./figures",
+                   background  = T,
+                   legendType = "pretty",
+                   theme_classic(),
+                   title = "RCP2.6") 
+
+map_rcp_fin<-map_rcp$map_param_PRETTY + 
+  ggplot2::theme(strip.text.y = element_text(size = 6),
+                 strip.text.x = element_text(size = 8),
+                 legend.text = element_text(size = 7),
+                 plot.title = element_text(hjust = 0.5))
+
+ggplot2::ggsave("./figures/SM/Gini_map_2050_rcp.tiff",map_rcp_fin,"tiff", width = 10, height = 5)
 
 #-------------------------------------------
 #-------------------------------------------
