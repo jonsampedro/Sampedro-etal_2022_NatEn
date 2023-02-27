@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<queries>
+
+<aQuery>
+      <all-regions/>
+        <gdpQueryBuilder title="GDP MER by region">
+            <axis1 name="region">region</axis1>
+            <axis2 name="Year">gdp-mer</axis2>
+            <xPath buildList="true" dataName="gdp-mer" group="false" sumAll="false">GDP/gdp-mer/text()</xPath>
+            <comments/>
+        </gdpQueryBuilder>
+	</aQuery>
+
+<aQuery>
+      <all-regions/>
+        <gdpQueryBuilder title="GDP per capita MER by region">
+            <axis1 name="region">region</axis1>
+            <axis2 name="Year">gdp-per-capita-mer</axis2>
+            <xPath buildList="true" dataName="gdp-per-capita-mer" group="false" sumAll="false">GDP/gdp-per-capita-mer/text()</xPath>
+            <comments/>
+        </gdpQueryBuilder>
+	</aQuery>
+
+<aQuery>
+      <all-regions/>
+        <demographicsQuery title="subregional income">
+            <axis1 name="region">region</axis1>
+            <axis2 name="Year">subregional-percapita-income</axis2>
+            <xPath buildList="true" dataName="subregional-percapita-income" group="false" sumAll="false">gcam-consumer/subregional-percapita-income/node()</xPath>
+            <comments/>
+        </demographicsQuery>
+	</aQuery>
+
+     <aQuery>
+		<all-regions/>
+         <demographicsQuery title="Population by region">
+            <axis1 name="region">region</axis1>
+            <axis2 name="Year">populationMiniCAM</axis2>
+            <xPath buildList="true" dataName="total-population" group="false" sumAll="false">demographics/populationMiniCAM/total-population/node()</xPath>
+            <comments/>
+         </demographicsQuery>
+      </aQuery>
+
+<aQuery>
+      <all-regions/>
+        <demographicsQuery title="subregional population">
+            <axis1 name="region">region</axis1>
+            <axis2 name="Year">subregional-population</axis2>
+            <xPath buildList="true" dataName="subregional-population" group="false" sumAll="false">gcam-consumer/subregional-population/node()</xPath>
+            <comments/>
+        </demographicsQuery>
+	</aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building floorspace">
+                    <axis1 name="building">gcam-consumer[@name]</axis1>
+                    <axis2 name="Year">floorspace[@year]</axis2>
+                    <xPath buildList="true" dataName="floorspace" group="false" sumAll="false">gcam-consumer//floorspace/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+<supplyDemandQuery title="building floorspace per capita">
+                    <axis1 name="Floorspace">input[@name]</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="percapita floorspace" group="false" sumAll="false"><![CDATA[
+                         
+declare function local:append-heirarchy($parent as node(), $append as node()) as node() {
+                         let $scn := $parent/ancestor::scenario,
+                              $rgn := $parent/ancestor::region,
+                             $consumer := $parent/ancestor::gcam-consumer
+                           return
+                              document { element scenario {
+                                                $scn/@*,
+                                                element region {
+                                                    $rgn/@*,
+                                                    element gcam-consumer {
+                                                        $consumer/@*,
+                                                        $append
+                                                    }
+                                                }
+                                            }
+                            }
+                     };  
+                     declare function local:get-percapita($inputs as node()*) as node()* {
+                     unordered {    
+                     for $input in $inputs
+                     let $new_input :=  
+                     element input {
+                         attribute type {'input'},
+                         attribute name { $input/@name },
+                         for $demand in $input/floorspace
+                         return 
+                             element demand-physical {
+                             attribute vintage {$demand/@year},
+                             (: TODO: hard coding units :)
+                             attribute unit { 'm^2/person'},
+                             (: floorspace is billion m^2 and population is 1000 people and we want m^2/persion :)
+                             text { $demand/text() div $input/ancestor::gcam-consumer/subregional-population[@year=$demand/@year] * 1000000 }
+                         }
+                     },
+                     $new_root := local:append-heirarchy($input/parent::*, $new_input)
+                     return $new_root//text()
+                     } 
+                     };
+                     declare function local:run-get-percapita($scenarios as xs:string*, $regions as xs:string*, $collection as xs:string) as node()* {     
+                     let $regionsG := if(not($regions[1] = 'Global'))
+                              then $regions
+                              else distinct-values(collection($collection)/scenario/world/*[@type='region']/@name)
+                     return
+                     for $scenario in $scenarios,       
+                     $region in $regionsG   
+                     let $scenario_split := tokenize($scenario, ' '),       
+                     $scenario_name := string-join($scenario_split[position() < last()], ' '),
+			 	 	 $scenario_date := $scenario_split[last()],
+			 	 	 $currTree := collection($collection)/scenario[@name = $scenario_name and @date = $scenario_date]/world/*[@type = 'region' and @name=$region]
+                     return 
+                        local:get-percapita($currTree/gcam-consumer//building-node-input)
+                        
+         }; 
+                 local:run-get-percapita((:scenarios:), (:regions:), (:collection:))
+                 
+            
+                    ]]></xPath>
+                    <comments/>
+                </supplyDemandQuery>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building service output by service">
+                    <axis1 name="sector">sector</axis1>
+                    <axis2 name="Year">physical-output[@vintage]</axis2>
+                    <xPath buildList="true" dataName="output" group="false" sumAll="false">*[@type='sector' and (@name='building' or (exists(child::keyword[@final-energy='building'])))]//
+               output-primary[@type='output' (:collapse:)]/
+               physical-output/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building total final energy by region">
+                    <axis1 name="region">region</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and (@name='building' or (exists(child::keyword[@final-energy='building'])))]//
+               *[@type='input' (:collapse:)]/demand-physical/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building total final energy by service">
+                    <axis1 name="sector">sector</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' and (@name='building' or (exists(child::keyword[@final-energy='building'])))]//
+               *[@type='input' (:collapse:)]/demand-physical/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building final energy by fuel">
+                    <axis1 name="input">input</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and (@name='building' or (exists(child::keyword[@final-energy='building'])))]//
+               *[@type='input']/demand-physical/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building final energy by service and fuel">
+                    <axis1 name="sector">sector</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' and (@name='building' or (exists(child::keyword[@final-energy='building'])))]//
+               *[@type='input']/demand-physical/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building final energy by subsector">
+                    <axis1 name="subsector">subsector</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' and (@name='building' or (exists(child::keyword[@final-energy='building'])))]/
+               *[@type='subsector']//*[@type='input' (:collapse:)]/demand-physical/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building final energy by tech (new)">
+                    <axis1 name="technology">technology</axis1>
+                    <axis2 name="Year">demand-physical[@vintage]</axis2>
+                    <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' and (@name='building' or (exists(child::keyword[@final-energy='building'])))]/
+               *[@type='subsector']/*[@type='technology']/*[@type='input']/
+               demand-physical[@vintage=parent::*/parent::*/@year]/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building service density by energy service">
+                    <axis1 name="building">building-node-input[@name]</axis1>
+                    <axis2 name="Year">service-density[@year]</axis2>
+                    <xPath buildList="true" dataName="service density" group="false" sumAll="false">gcam-consumer//building-node-input/*[@type="input"]/service-density/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building service output by tech (new)">
+                    <axis1 name="technology">technology</axis1>
+                    <axis2 name="Year">physical-output[@vintage]</axis2>
+                    <xPath buildList="true" dataName="output" group="false" sumAll="false">*[@type='sector' and (@name='building' or (exists(child::keyword[@final-energy='building'])))]/
+               *[@type='subsector']/*[@type='technology']/
+               output-primary[@type='output']/
+               physical-output[@vintage=parent::*/parent::*/@year]/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="building satiation impedance by energy service">
+                    <axis1 name="building">building-node-input[@name]</axis1>
+                    <axis2 name="Year">satiation-impedance[@year]</axis2>
+                    <xPath buildList="true" dataName="cost by unit floorspace" group="false" sumAll="false">gcam-consumer//building-node-input/*[@type="input"]/satiation-impedance/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+
+      </aQuery>
+
+
+  <aQuery>
+  <all-regions/>
+            <emissionsQueryBuilder title="nonCO2 emissions by sector">
+                <axis1 name="GHG">GHG</axis1>
+                <axis2 name="Year">emissions</axis2>
+                <xPath buildList="true" dataName="emissions" group="false" sumAll="false">*[@type = 'sector']//*[@type = 'GHG']/emissions/node()</xPath>
+                <comments/>
+            </emissionsQueryBuilder>
+ </aQuery>
+
+     <aQuery>
+		<all-regions/>
+            <supplyDemandQuery title="resource production">
+                <axis1 name="resource">resource</axis1>
+                <axis2 name="Year">output</axis2>
+                <xPath buildList="true" dataName="output" group="false" sumAll="false">*[@type='resource']//output/node()</xPath>
+                <comments/>
+            </supplyDemandQuery>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+				<query title="detailed land allocation">
+                <axis1 name="LandLeaf">LandLeaf[@name]</axis1>
+                <axis2 name="Year">land-allocation[@year]</axis2>
+                <xPath buildList="true" dataName="LandLeaf" group="false" sumAll="false">/LandNode[@name='root' or @type='LandNode' (:collapse:)]//land-allocation/text()</xPath>
+                <comments/>
+            </query>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+        <supplyDemandQuery title="water withdrawals by region">
+            <axis1 name="region">region</axis1>
+            <axis2 name="Year">demand-physical[@vintage]</axis2>
+            <xPath buildList="true" dataName="input" group="false" sumAll="false">*[@type='sector' (:collapse:) and not(contains(@name, 'water_td'))]//*[@type='input' (:collapse:) and contains(@name,'water_td')
+         and ends-with(@name,'_W')]/demand-physical/node()</xPath>
+            <comments/>
+        </supplyDemandQuery>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="elec gen by gen tech">
+                    <axis1 name="technology">technology</axis1>
+                    <axis2 name="Year">physical-output[@vintage]</axis2>
+                    <xPath buildList="true" dataName="output" group="false" sumAll="false">*[@type='sector' (:collapse:) and
+               (@name='electricity' or @name='elect_td_bld' or @name='industrial energy use')]/
+               *[@type='subsector']/*[@type='technology' and not (@name='electricity' or @name='elect_td_bld')]/
+               *[@type='output' and (@name='electricity' or @name='elect_td_bld')]/
+               physical-output/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+      </aQuery>
+
+     <aQuery>
+		<all-regions/>
+                <supplyDemandQuery title="elec gen by gen tech">
+                    <axis1 name="technology">technology</axis1>
+                    <axis2 name="Year">physical-output[@vintage]</axis2>
+                    <xPath buildList="true" dataName="output" group="false" sumAll="false">*[@type='sector' (:collapse:) and
+               (@name='electricity' or @name='elect_td_bld' or @name='industrial energy use')]/
+               *[@type='subsector']/*[@type='technology' and not (@name='electricity' or @name='elect_td_bld')]/
+               *[@type='output' and (@name='electricity' or @name='elect_td_bld')]/
+               physical-output/node()</xPath>
+                    <comments/>
+                </supplyDemandQuery>
+      </aQuery>
+
+ <aQuery>
+		<all-regions/>
+ <supplyDemandQuery title="ag production by tech">
+            <axis1 name="technology">technology[@name]</axis1>
+            <axis2 name="Year">physical-output[@vintage]</axis2>
+            <xPath buildList="true" dataName="output" group="false" sumAll="false">*[@type='sector' and (local-name()='AgSupplySector')]/
+            *[@type='subsector']/*[@type='technology']/
+            output-primary/physical-output/node()</xPath>
+            <comments/>
+         </supplyDemandQuery>
+ </aQuery>
+
+
+ <aQuery>
+		<all-regions/>
+            <query title="LUC emissions by region">
+                <axis1 name="LandLeaf">LandLeaf</axis1>
+                <axis2 name="Year">land-use-change-emission[@year]</axis2>
+                <xPath buildList="true" dataName="land-use-change-emission" group="false" sumAll="true">/LandNode[@name='root' or @type='LandNode' (:collapse:)]//
+                land-use-change-emission[@year&gt;1970]/text()</xPath>
+                <comments/>
+            </query>
+ </aQuery>
+
+	<aQuery>
+      <all-regions/>
+         <query title="land allocation by crop">
+            <axis1 name="LandLeaf">LandLeaf[@crop]</axis1>
+            <axis2 name="Year">land-allocation[@year]</axis2>
+            <xPath buildList="true" dataName="LandLeaf" group="false" sumAll="false">/LandNode[@name='root' or @type='LandNode' (:collapse:)]//land-allocation/text()</xPath>
+            <comments/>
+         </query>
+	</aQuery>
+
+	<aQuery>
+      <all-regions/>
+<supplyDemandQuery title="primary energy consumption by region (avg fossil efficiency)">
+                <axis1 name="fuel">input[@name]</axis1>
+                <axis2 name="Year">demand-physical[@vintage]</axis2>
+                <xPath buildList="true" dataName="input" group="false" sumAll="false">
+                    <![CDATA[ 
+      	 	 	 declare function local:get-weighted-eff($outputs as node()*) as node()* {
+			 	 		   unordered {
+			 			     for $year in distinct-values($outputs/physical-output/@vintage)
+			 		             let $eff_unweight := sum(for $res in $outputs/physical-output[@vintage = $year]
+			 		                               let $eff_curr := $res/parent::*/following-sibling::input-energy[1]/IO-coefficient[@vintage = $year]
+			 		                               (: where $res/physical-output/@vintage = $year :)
+			 		                               return $res div $eff_curr),
+			 			             $weight := sum(for $res in $outputs/physical-output[@vintage = $year]
+			 		                         (: where $res/physical-output/@vintage = $year :)
+			 		                         return $res),
+			 			             $eff_weighted := $eff_unweight div $weight
+			 		             return element efficiency-weighted {attribute year { $year }, text { $eff_weighted }}
+			             		}
+			 	 	 };
+			 	 	 declare function local:append-heirarchy($parent as node(), $append as node()) as node() {
+			 	 		 let $scn := $parent/ancestor::scenario,
+			 			   	  $rgn := $parent/ancestor::region
+			 			   return
+			 			   	  document { element scenario {
+			 			 	  					$scn/@*,
+			 			 						element region {
+			 			 							$rgn/@*,
+			 			 							$append
+			 			 						}
+			 			 	  				}
+			 				}
+			 	 		 (: let $new_node := element {local-name($parent)} {$parent/@*, $append} 	
+			 	 		 return
+			 	 		 if(local-name($parent) != 'scenario')
+			 	 		 then local:append-heirarchy($parent/parent::*, $new_node)
+			 	 		 else document { $new_node } :)
+			 	 	 };  
+			 	 	 declare function local:get-primary-renewable($outputs as node()*, $weighted_effs as node()*) as node()* {
+			 	 	 unordered { 	
+			 	 	 for $output in $outputs (:,
+			 	 	 $weighted_eff in $weighted_effs :)
+			 	 	 let $new_output :=  (: element tempParent { :)
+			 	 	 element input {
+			 	 		 attribute type {'input'},
+			 	 		 attribute name {$output/parent::*/following-sibling::keyword/@primary-renewable},
+			 	 		 element demand-physical {
+			 	 			 attribute vintage {$output/@vintage},
+			 	 			 attribute unit {$output/@unit},
+			 	 			 text { $output div $weighted_effs[@year=$output/@vintage] }
+			 	 		 }(: ,
+			 	 		 element keyword {
+			 	 			 attribute primary-consumption { (: if($output/parent::*/following-sibling::keyword[fn:exists(@primary-renewable)])
+			 	 						 then :) $output/parent::*/following-sibling::keyword/@primary-renewable
+			 	 						 (: else $output/parent::*/parent::*/@name :)
+			 	 		       }
+			 	 		 } :)
+			 	 	 (: } :)
+			 	 	 },
+			 	 	 $new_root := local:append-heirarchy($output/parent::*/parent::*, $new_output)
+			 	 	 (:where $output/@vintage = $weighted_eff/@year:)
+			 	 	 return $new_root//text()
+			 	 	 } 
+			 	 	 };
+			 	 	 declare function local:check-keyword($values as node()*) as node()* {
+			 	 	 	unordered {
+			 	 		for $value in $values
+			 	 		let $input := $value/parent::*/parent::*,
+			 	 		    $keyword_name :=
+			 	 		        (: if($input/following-sibling::keyword[fn:exists(@primary-consumption)])
+			 	 			then :) $input/following-sibling::keyword/@primary-consumption
+			 	 			(: else $input/@name :), 
+			 	 		    $new_parent := element {local-name($input)} {$input/@*, 
+			 	 			$value/parent::*,
+			 	 		        element keyword { attribute primary-consumption {$keyword_name} }
+			 	 		        },
+			 	 		    $new_root := local:append-heirarchy($input/parent::*, $new_parent)
+			 	 		return $new_root//text()
+			 	 		}
+			 	 	};
+			 	 
+			 	 	 declare function local:run-primary-energy($scenarios as xs:string*, $regions as xs:string*, $collection as xs:string) as node()* { 	
+			 	 	 (: unordered { :)
+			 	 	 let $regionsG := if(not($regions[1] = 'Global'))
+			 	 	 		  then $regions
+			 	 	 		  else distinct-values(collection($collection)/scenario/world/*[@type='region']/@name)
+			 	 	 return
+			 	 	 for $scenario in $scenarios, 	    
+			 	 	 $region in $regionsG 	
+			 	 	 let $scenario_split := tokenize($scenario, ' '),
+                     $scenario_name := string-join($scenario_split[position() < last()], ' '),
+			 	 	 $scenario_date := $scenario_split[last()],
+			 	 	 $currTree := collection($collection)/scenario[@name = $scenario_name and @date = $scenario_date]/world/*[@type = 'region' and @name=$region]
+			 	 	 return (: get renewables from electricity :)
+			 	 	 local:get-primary-renewable($currTree/*[@type='sector' (: collapse :) and (@name='electricity' or @name='elect_td_bld' or starts-with(@name,'elec_'))]//keyword[fn:exists(@primary-renewable)]/preceding-sibling::output-primary/physical-output, local:get-weighted-eff($currTree/*[@type='sector' (: collapse :) and (@name='electricity' or starts-with(@name, 'elec_'))]//keyword[fn:exists(@average-fossil-efficiency)]/preceding-sibling::output-primary)) 
+					 		 	| (: get renewables from H2ProdCS :)
+					 	 	 	local:get-primary-renewable($currTree/supplysector[@name='H2 central production'](: /*[@type='subsector' (: collapse :) and fn:not(@name='electrolysis')] :)//keyword[fn:exists(@primary-renewable)]/preceding-sibling::output-primary/physical-output, local:get-weighted-eff($currTree/supplysector[@name='H2 central production']//keyword[fn:exists(@average-fossil-efficiency)]/preceding-sibling::output-primary)) 
+					 	 	 	| (: get renewables from H2ProdDist :)
+					 	 	 	local:get-primary-renewable($currTree/supplysector[@name='H2 forecourt production'](: /*[@type='subsector' (: collapse :) and fn:not(@name='electrolysis')] :)//keyword[fn:exists(@primary-renewable)]/preceding-sibling::output-primary/physical-output, local:get-weighted-eff($currTree/supplysector[@name='H2 forecourt production']//keyword[fn:exists(@average-fossil-efficiency)]/preceding-sibling::output-primary)) 
+					 	 	 	| (: get the primaries :)
+	 	 						(: local:check-keyword( :) $currTree//keyword[fn:exists(@primary-consumption)]/preceding-sibling::input-energy[not(contains(@name, 'water'))]/demand-physical/text() (: ) :)
+                                | (: get traditional biomass :)
+							    $currTree//*[@type='input' and @name='traditional biomass']/demand-physical/node()
+			 	 	 	
+			 	 	 (: } :)
+	 	 }; 
+            	 local:run-primary-energy((:scenarios:), (:regions:), (:collection:))
+                 
+            ]]>
+                </xPath>
+                <comments/>
+                <labelRewriteList append-values="false">
+                    <level name="input">
+                        <rewrite from="exotic-elect" to="j breakthrough"/>
+                        <rewrite from="wind-H2" to="g wind"/>
+                        <rewrite from="biomass" to="d biomass"/>
+                        <rewrite from="traditional biomass" to="j traditional biomass"/>
+                        <rewrite from="regional corn for ethanol" to="d biomass"/>
+                        <rewrite from="crude oil" to="a oil"/>
+                        <rewrite from="nuclear-elect" to="e nuclear"/>
+                        <rewrite from="solar-H2" to="h solar"/>
+                        <rewrite from="regional natural gas" to=""/>
+                        <rewrite from="regional biomassOil" to="d biomass"/>
+                        <rewrite from="traded unconventional oil" to="a oil"/>
+                        <rewrite from="geothermal-elect" to="i geothermal"/>
+                        <rewrite from="natural gas" to="b natural gas"/>
+                        <rewrite from="wholesale gas" to=""/>
+                        <rewrite from="hydro-elect" to="f hydro"/>
+                        <rewrite from="solar-elect" to="h solar"/>
+                        <rewrite from="coal" to="c coal"/>
+                        <rewrite from="traded oil" to="a oil"/>
+                        <rewrite from="traded natural gas" to="b natural gas"/>
+                        <rewrite from="traded coal" to="c coal"/>
+                        <rewrite from="elect_td_ind" to=""/>
+                        <rewrite from="wind-elect" to="g wind"/>
+                        <rewrite from="total biomass" to="d biomass"/>
+                        <rewrite from="nuclear-H2" to="e nuclear"/>
+                    </level>
+                </labelRewriteList>
+            </supplyDemandQuery>
+	</aQuery>
+
+
+     <aQuery>
+		<all-regions/>
+            <marketQuery title="prices of all markets">
+                <axis1 name="market">market</axis1>
+                <axis2 name="Year">market</axis2>
+                <xPath buildList="true" dataName="price" group="false" sumAll="false">Marketplace/market[true()]/price/node()</xPath>
+                <comments/>
+            </marketQuery>
+      </aQuery>
+
+
+
+    </queries>
+

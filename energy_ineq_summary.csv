@@ -1,4 +1,4 @@
-"scenario","narrative","region","sector","year","Palma_ratio","gini"
+"scenario","narrative","region","sector","year","Palma_ratio","value"
 "Baseline","SSP1","Africa_Eastern","cooling",2015,8.70426926655324,0.63436874879261
 "Baseline","SSP1","Africa_Eastern","cooling",2020,5.94859724617718,0.584602286733863
 "Baseline","SSP1","Africa_Eastern","cooling",2025,5.66941048834834,0.573782570754142

@@ -10,11 +10,12 @@ library(RColorBrewer)
 library(tibble)
 library(gcamdata)
 library(rmap)
+library(here)
 # --------
 # Extract queries from db using rgcam
 # --------
 
-setwd("C:/Users/samp699/Desktop/Paper MultCons/results")
+setwd(here())
 
 #conn <- localDBConn("./db", 'database_basexdb_Sampedro-etal_2022',migabble = FALSE)
 #prj <- addScenario(conn,"Sampedro-etal_2022.dat",c("GCAM_SSP4", "GCAM_SSP5", "GCAM_SSP1", "GCAM_SSP2", "GCAM_SSP3"),"./data/queries_Sampedro-etal_2022.xml")
@@ -328,13 +329,15 @@ energy.ineq.summary<-modern.palma.serv %>%
   rename(Palma_ratio = value,
          sector = class,
          region = subRegion) %>%
-  left_join_error_no_match(modern.gini.serv, by = c("scenario", "narrative", "region", "sector", "year")) %>%
+  left_join_error_no_match(modern.gini.serv %>%
+                             rename(region = subRegion,
+                                    sector = class), by = c("scenario", "narrative", "region", "sector", "year")) %>%
   write.csv("energy_ineq_summary.csv", row.names = F)
   
 
 #----------------------------------------
 # Emissions: Read non-CO2 emssions that don't work with rgcam
-nonco2<-read.csv("./data/nonco2.csv") %>%
+nonco2<-read.csv("./workflow/data/nonco2.csv") %>%
   separate(scenario, c("scenario","x"), sep = ",") %>%
   select(-x) %>%
   gather(year, value, -scenario, -region, -sector, -ghg, -unit) %>%
