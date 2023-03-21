@@ -2,7 +2,7 @@
 
 ## Sampedro-etal_Joule
 
-**Residential energy demand, emissions, and expenditures at region and income-decile level for alternative SSP scenarios**
+**Residential energy demand, emissions, and expenditures at regional and income-decile level for alternative futures**
 
 Jon Sampedro<sup>1</sup>, Stephanie Waldhoff<sup>2\*</sup>, Jae Edmonds<sup>2</sup>, Gokul Iyer<sup>2</sup>, Siwa Msangi<sup>3</sup>, Kanishka Narayan<sup>2</sup>, Pralit Patel<sup>2</sup>, and Marshall Wise<sup>2</sup>, 
 
@@ -15,7 +15,7 @@ Jon Sampedro<sup>1</sup>, Stephanie Waldhoff<sup>2\*</sup>, Jae Edmonds<sup>2</s
 \* corresponding author:  Stephanie.Waldhoff@pnnl.gov
 
 ## Abstract
-Income and its distribution are important determinants of residential energy demand and carry direct implications for human well-being and climate. We explore the sensitivity of residential energy systems to income magnitude and distribution across SSP-RCP combinations using a global, integrated, multisector dynamics model, GCAM, which tracks national/regional residential buildings energy services and fuel choice by income decile. Nation/region energy use patterns across deciles tend to converge over time with aggregate income growth, as richer consumers approach satiation levels in floorspace and energy services. However, in some regions, existing within-region inequalities in energy consumption persist over time due to slow income growth in lower income groups. Due to continued differences in fuel types, lower income groups will have higher exposure to household air pollution, despite lower contributions to direct GHG emissions. We also find that the share of income dedicated to energy is higher for lower deciles, with strong regional differences.
+Income and its distribution profile are important determinants of residential energy demand and carry direct implications for human well-being and climate. We explore the sensitivity of residential energy systems to income growth and distribution across SSP-RCP scenarios using a global, integrated, multisector dynamics model, GCAM, which tracks national/regional household energy services and fuel choice by income decile. Nation/region energy use patterns across deciles tend to converge over time with aggregate income growth, as higher-income consumers approach satiation levels in floorspace and energy services. However, in some regions, existing within-region inequalities in energy consumption persist over time due to slow income growth in lower income groups. Due to continued differences in fuel types, lower income groups will have higher exposure to household air pollution, despite lower contributions to greenhouse gas emissions. We also find that the share of income dedicated to energy is higher for lower deciles, with strong regional differences.
 
 ## Code reference
 Available at Zenodo: https://zenodo.org/record/6780818#.YrzrFXbMKUk
