@@ -19,10 +19,12 @@ Income and its distribution profile are important determinants of residential en
 
 ## Code reference
 Available at Zenodo: [https://zenodo.org/record/6780818#.YrzrFXbMKUk](https://zenodo.org/record/7755538#.ZBlzhHbMKUk)
+
 jonsampedro. (2023). jonsampedro/Sampedro-etal_Joule: Sampedro-etal_Joule (v-1.1.0). Zenodo. https://doi.org/10.5281/zenodo.7755538
 
 ## Data reference
 Available at Zenodo: https://zenodo.org/record/6780424#.YrznmXbMKUk
+
 Jon Sampedro, Stephanie Waldhoff, Jae Edmonds, Gokul Iyer, Siwa Msangi, Kanishka Narayan, Pralit Patel, & Marshall Wise. (2022). Input data for Sampedro et al [Data set]. Zenodo. https://doi.org/10.5281/zenodo.6780424
 
 ## Contributing modeling software
