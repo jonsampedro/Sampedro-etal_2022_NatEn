@@ -1,6 +1,6 @@
 [![DOI](https://zenodo.org/badge/508804988.svg)](https://zenodo.org/badge/latestdoi/508804988)
 
-## Sampedro-etal_2022_NatEn
+## Sampedro-etal_2022_Joule
 
 **Residential energy demand, emissions, and expenditures at region and income-decile level for alternative SSP scenarios**
 
