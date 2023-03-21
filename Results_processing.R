@@ -1,6 +1,5 @@
 # Load libraries
 # --------
-#.libPaths("C:/Users/samp699/Documents/R/lib-rfasst")
 
 library(rgcam)
 library(dplyr)
