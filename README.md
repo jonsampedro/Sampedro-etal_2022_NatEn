@@ -18,9 +18,9 @@ Jon Sampedro<sup>1</sup>, Stephanie Waldhoff<sup>2\*</sup>, Jae Edmonds<sup>2</s
 Income and its distribution profile are important determinants of residential energy demand and carry direct implications for human well-being and climate. We explore the sensitivity of residential energy systems to income growth and distribution across SSP-RCP scenarios using a global, integrated, multisector dynamics model, GCAM, which tracks national/regional household energy services and fuel choice by income decile. Nation/region energy use patterns across deciles tend to converge over time with aggregate income growth, as higher-income consumers approach satiation levels in floorspace and energy services. However, in some regions, existing within-region inequalities in energy consumption persist over time due to slow income growth in lower income groups. Due to continued differences in fuel types, lower income groups will have higher exposure to household air pollution, despite lower contributions to greenhouse gas emissions. We also find that the share of income dedicated to energy is higher for lower deciles, with strong regional differences.
 
 ## Code reference
-Available at Zenodo: [https://zenodo.org/record/6780818#.YrzrFXbMKUk](https://zenodo.org/record/7755538#.ZBlzhHbMKUk)
+Available at Zenodo: [https://zenodo.org/record/6780818#.YrzrFXbMKUk](https://zenodo.org/record/8116637)(https://zenodo.org/record/8116637)
 
-jonsampedro. (2023). jonsampedro/Sampedro-etal_Joule: Sampedro-etal_Joule (v-1.1.0). Zenodo. https://doi.org/10.5281/zenodo.7755538
+jonsampedro. (2023). jonsampedro/Sampedro-etal_OneEarth: v-1.2.0 (v-1.2.0). Zenodo. https://doi.org/10.5281/zenodo.8116637
 
 ## Data reference
 Available at Zenodo: https://zenodo.org/record/6780424#.YrznmXbMKUk
