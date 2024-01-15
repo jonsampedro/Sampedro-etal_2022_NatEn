@@ -1,6 +1,6 @@
 [![DOI](https://zenodo.org/badge/508804988.svg)](https://zenodo.org/badge/latestdoi/508804988)
 
-## Sampedro-etal_OneEarth
+## Sampedro-etal_ERL
 
 **Residential energy demand, emissions, and expenditures at regional and income-decile level for alternative futures**
 
